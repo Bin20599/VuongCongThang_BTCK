@@ -4,11 +4,9 @@ print("Script directory:", os.path.dirname(os.path.abspath(__file__)))
 import csv
 import os
 
-# Đường dẫn tuyệt đối cho file CSV
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))  # Thư mục chứa script
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))  
 FILENAME = os.path.join(BASE_DIR, "sinhvien.csv")
 
-# Hàm đọc dữ liệu từ file CSV
 def load_students(filename=FILENAME):
     students = []
     if not os.path.exists(filename):
@@ -27,7 +25,6 @@ def load_students(filename=FILENAME):
         print("Lỗi khi đọc file:", e)
     return students
 
-# Hàm lưu dữ liệu vào file CSV
 def save_students(students, filename=FILENAME):
     try:
         with open(filename, mode='w', newline='', encoding='utf-8') as file:
@@ -40,7 +37,6 @@ def save_students(students, filename=FILENAME):
     except Exception as e:
         print("Lỗi khi lưu file:", e)
 
-# Hiển thị danh sách sinh viên
 def display_students(students):
     if not students:
         print("Danh sách sinh viên trống.")
@@ -50,7 +46,6 @@ def display_students(students):
     for s in students:
         print(f"{s['id']:<5} {s['name']:<25} {s['age']:<5} {s['major']}")
 
-# Thêm sinh viên
 def add_student(students):
     id_ = input("Nhập ID: ").strip()
     if any(s['id'] == id_ for s in students):
@@ -68,7 +63,6 @@ def add_student(students):
     save_students(students)
     display_students(students)
 
-# Cập nhật sinh viên
 def update_student(students):
     id_ = input("Nhập ID sinh viên cần cập nhật: ").strip()
     for s in students:
@@ -88,7 +82,6 @@ def update_student(students):
             return
     print("Không tìm thấy sinh viên với ID này.")
 
-# Xóa sinh viên
 def delete_student(students):
     id_ = input("Nhập ID sinh viên cần xóa: ").strip()
     for i, s in enumerate(students):
@@ -100,7 +93,6 @@ def delete_student(students):
             return
     print("Không tìm thấy sinh viên với ID này.")
 
-# Tìm kiếm sinh viên theo tên
 def search_student(students):
     keyword = input("Nhập tên sinh viên cần tìm: ").strip().lower()
     found = [s for s in students if keyword in s['name'].lower()]
@@ -109,7 +101,6 @@ def search_student(students):
     else:
         print("Không tìm thấy sinh viên nào phù hợp.")
 
-# Menu chính
 def main():
     students = load_students()
     print("\n=== Danh sách sinh viên hiện tại ===")
@@ -143,3 +134,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
