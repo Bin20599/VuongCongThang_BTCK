@@ -1,31 +1,31 @@
 import os
-print("Current working directory:", os.getcwd())
-print("Script directory:", os.path.dirname(os.path.abspath(__file__)))
 import csv
-import os
 
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))  
-FILENAME = os.path.join(BASE_DIR, "sinhvien.csv")
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+CSV_FILENAME = os.path.join(BASE_DIR, "sinhvien.csv")
+INPUT_FILENAME = os.path.join(BASE_DIR, "input.txt")
 
-def load_students(filename=FILENAME):
+def load_students(filename=INPUT_FILENAME):
     students = []
     if not os.path.exists(filename):
-        print(f"File {filename} không tồn tại, sẽ tạo mới khi lưu.")
+        print(f"File {filename} không tồn tại.")
         return students
     try:
-        with open(filename, mode='r', newline='', encoding='utf-8') as file:
-            reader = csv.DictReader(file)
-            for row in reader:
+        with open(filename, mode='r', encoding='utf-8') as file:
+            for line in file:
+                line = line.strip()
+                if not line:
+                    continue
                 try:
-                    row['age'] = int(row['age'])
-                    students.append(row)
+                    id_, name, age, major = [x.strip() for x in line.split(',')]
+                    students.append({'id': id_, 'name': name, 'age': int(age), 'major': major})
                 except ValueError:
-                    print(f"Dữ liệu không hợp lệ ở dòng: {row}")
+                    print(f"Dòng không hợp lệ: {line}")
     except Exception as e:
         print("Lỗi khi đọc file:", e)
     return students
 
-def save_students(students, filename=FILENAME):
+def save_students(students, filename=CSV_FILENAME):
     try:
         with open(filename, mode='w', newline='', encoding='utf-8') as file:
             fieldnames = ['id', 'name', 'age', 'major']
@@ -33,7 +33,7 @@ def save_students(students, filename=FILENAME):
             writer.writeheader()
             for s in students:
                 writer.writerow(s)
-        print("Đã lưu dữ liệu vào", filename)
+        print(f"Đã lưu dữ liệu vào {filename}")
     except Exception as e:
         print("Lỗi khi lưu file:", e)
 
@@ -47,6 +47,7 @@ def display_students(students):
         print(f"{s['id']:<5} {s['name']:<25} {s['age']:<5} {s['major']}")
 
 def add_student(students):
+    print("Chức năng thêm sinh viên hiện tại vẫn giữ menu nhập tay")
     id_ = input("Nhập ID: ").strip()
     if any(s['id'] == id_ for s in students):
         print("ID đã tồn tại! Thêm thất bại.")
@@ -101,8 +102,40 @@ def search_student(students):
     else:
         print("Không tìm thấy sinh viên nào phù hợp.")
 
+def import_students_from_txt(students, input_filename=INPUT_FILENAME):
+    if not os.path.exists(input_filename):
+        print(f"File {input_filename} không tồn tại.")
+        return
+    
+    new_students = []
+    try:
+        with open(input_filename, mode='r', encoding='utf-8') as file:
+            for line in file:
+                line = line.strip()
+                if not line:
+                    continue  
+                try:
+                    id_, name, age, major = [x.strip() for x in line.split(',')]
+                    if any(s['id'] == id_ for s in students):
+                        print(f" Bỏ qua ID {id_} vì đã tồn tại.")
+                        continue
+                    new_students.append({'id': id_, 'name': name, 'age': int(age), 'major': major})
+                except ValueError:
+                    print(f"Dòng không hợp lệ: {line}")
+    except Exception as e:
+        print("Lỗi khi đọc file:", e)
+        return
+
+    if new_students:
+        students.extend(new_students)
+        save_students(students)
+        print(f" Đã nhập {len(new_students)} sinh viên mới từ {input_filename}.")
+        display_students(students)
+    else:
+        print("Không có sinh viên hợp lệ nào được thêm.")
+
 def main():
-    students = load_students()
+    students = load_students()  
     print("\n=== Danh sách sinh viên hiện tại ===")
     display_students(students)
 
@@ -113,8 +146,10 @@ def main():
         print("3. Xóa sinh viên")
         print("4. Tìm kiếm sinh viên theo tên")
         print("5. Hiển thị danh sách sinh viên")
+        print("6. Nhập danh sách từ file input.txt")
         print("0. Thoát")
         choice = input("Chọn chức năng: ").strip()
+
         if choice == '1':
             add_student(students)
         elif choice == '2':
@@ -125,6 +160,8 @@ def main():
             search_student(students)
         elif choice == '5':
             display_students(students)
+        elif choice == '6':
+            import_students_from_txt(students)
         elif choice == '0':
             save_students(students)
             print("Thoát chương trình.")
@@ -134,4 +171,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
