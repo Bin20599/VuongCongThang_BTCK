@@ -1,0 +1,11 @@
+id,name,age,major
+1,Bin,20,It
+2,Hoa,22,Economics
+3,Linh,20,Design
+4,Minh,23,Mechanical Engineering
+5,Trang,21,Finance
+6,An,22,Marketing
+7,Quang,24,Civil Engineering
+8,Hanh,20,Computer Science
+9,Tuan,23,Electrical Engineering
+
